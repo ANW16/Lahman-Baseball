@@ -59,15 +59,44 @@ WHERE yearid = 1920
 
 			---Base Stealing Success 2016---
 
-/*SELECT playerid, sb, cs, sb/(sb+cs)::FLOAT AS success_rate
-FROM fielding
-WHERE sb + cs > 20
-ORDER BY sb DESC*/
+/*SELECT fielding.yearid, CONCAT(namefirst, ' ', namelast) AS name, sb, cs, sb/(sb+cs)::FLOAT AS success_rate
+FROM fielding INNER JOIN people ON fielding.playerid = people.playerid
+WHERE sb + cs > 20 AND yearid = '2016'
+ORDER BY success_rate DESC*/
 
 
+			---1970-2016 WC Data---
+
+WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
+						FROM teams
+						WHERE yearid >= 1970 
+						GROUP BY teamid
+						ORDER BY total_wins DESC),
+			
+			ws_losers AS (SELECT teamid, wswin
+						FROM teams
+						WHERE yearid >= 1970 AND wswin ILIKE 'N'
+						ORDER BY teamid ASC),
+						
+			ws_winners AS (SELECT teamid, wswin
+						FROM teams
+						WHERE yearid >= 1970 AND wswin ILIKE 'Y'
+						ORDER BY teamid ASC),
+						
+	most_wins_per_season AS (SELECT DISTINCT(yearid),MAX(w)
+							FROM teams
+							WHERE yearid >= 1970 
+							GROUP BY yearid
+							ORDER BY yearid ASC)
 
 
-
+			--Total Wins for Losers/Winners of WS--
+			
+/*SELECT yearid, teamid, SUM(w) AS total_wins, wswin
+FROM teams
+WHERE yearid >= 1970 AND wswin ILIKE 'Y'
+GROUP BY teamid, wswin, yearid
+ORDER BY total_wins ASC*/
 
 
 
