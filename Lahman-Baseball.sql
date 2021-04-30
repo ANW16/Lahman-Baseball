@@ -67,28 +67,28 @@ ORDER BY success_rate DESC*/
 
 			---1970-2016 WC Data---
 
-WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
+/*WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
 						FROM teams
 						WHERE yearid >= 1970 
 						GROUP BY teamid
 						ORDER BY total_wins DESC),
 			
-			ws_losers AS (SELECT teamid, wswin
+			ws_losers AS (SELECT yearid, teamid, wswin AS ws_loss, w
 						FROM teams
 						WHERE yearid >= 1970 AND wswin ILIKE 'N'
-						ORDER BY teamid ASC),
+						ORDER BY yearid ASC),
 						
-			ws_winners AS (SELECT teamid, wswin
+			ws_winners AS (SELECT yearid, teamid, wswin AS ws_win, w
 						FROM teams
 						WHERE yearid >= 1970 AND wswin ILIKE 'Y'
-						ORDER BY teamid ASC),
+						ORDER BY yearid ASC)
 						
-	most_wins_per_season AS (SELECT DISTINCT(yearid),MAX(w)
-							FROM teams
-							WHERE yearid >= 1970 
-							GROUP BY yearid
-							ORDER BY yearid ASC)
-
+SELECT teams.yearid, MAX(w) AS most_w
+FROM teams
+WHERE teams.yearid >= 1970 
+GROUP BY teams.yearid
+ORDER BY teams.yearid ASC*/
+						
 
 			--Total Wins for Losers/Winners of WS--
 			
@@ -99,10 +99,4 @@ GROUP BY teamid, wswin, yearid
 ORDER BY total_wins ASC*/
 
 
-
-
-
-
-
-
-
+			---
