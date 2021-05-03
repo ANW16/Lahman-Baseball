@@ -27,7 +27,7 @@ WHERE appearances.playerid = smallest_player.playerid*/
 SELECT vandy_majors.playerid, full_name, SUM(salary) AS total_salary
 FROM salaries INNER JOIN vandy_majors ON salaries.playerid = vandy_majors.playerid
 GROUP BY full_name, vandy_majors.playerid
-ORDER BY total_salary DESC */
+ORDER BY total_salary DESC*/
 
 
 			---Putouts by Group---
@@ -59,15 +59,15 @@ WHERE yearid = 1920
 
 			---Base Stealing Success 2016---
 
-/*SELECT fielding.yearid, CONCAT(namefirst, ' ', namelast) AS name, sb, cs, sb/(sb+cs)::FLOAT AS success_rate
-FROM fielding INNER JOIN people ON fielding.playerid = people.playerid
-WHERE sb + cs > 20 AND yearid = '2016'
+/*SELECT batting.yearid, CONCAT(namefirst, ' ', namelast) AS name, sb, cs, ROUND(sb/(sb+cs)::decimal, 2) AS success_rate
+FROM batting INNER JOIN people ON batting.playerid = people.playerid
+WHERE sb + cs >= 20 AND yearid = '2016'
 ORDER BY success_rate DESC*/
 
 
-			---1970-2016 WC Data---
+			---1970-2016 WS Data---
 
-/*WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
+WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
 						FROM teams
 						WHERE yearid >= 1970 
 						GROUP BY teamid
@@ -87,16 +87,69 @@ SELECT teams.yearid, MAX(w) AS most_w
 FROM teams
 WHERE teams.yearid >= 1970 
 GROUP BY teams.yearid
-ORDER BY teams.yearid ASC*/
+ORDER BY teams.yearid ASC
 						
 
 			--Total Wins for Losers/Winners of WS--
 			
-/*SELECT yearid, teamid, SUM(w) AS total_wins, wswin
+/*SELECT yearid, teamid, w AS total_wins, wswin
 FROM teams
-WHERE yearid >= 1970 AND wswin ILIKE 'Y'
-GROUP BY teamid, wswin, yearid
+WHERE yearid >= 1970 AND wswin ILIKE 'N'
+GROUP BY teamid, wswin, yearid, w
+ORDER BY total_wins DESC*/
+
+/*SELECT yearid, teamid, w AS total_wins, wswin
+FROM teams
+WHERE yearid >= 1970 AND wswin ILIKE 'Y' AND yearid <> 1981
+GROUP BY teamid, wswin, yearid, w
 ORDER BY total_wins ASC*/
 
+			---Attendance for Teams/Parks---
+			
+/*SELECT  park_name, franchname, (homegames.attendance / games) AS atd_avg
+FROM homegames 
+		LEFT JOIN parks ON homegames.park = parks.park 
+		LEFT JOIN teams ON teams.teamid = homegames.team 
+		LEFT JOIN teamsfranchises ON teamsfranchises.franchid = teams.franchid
+WHERE year = 2016 AND games >= 10
+GROUP BY franchname, park_name, games, homegames.attendance
+ORDER BY atd_avg DESC*/
 
-			---
+			
+			
+			
+			
+			---Manager of the year AL & NL---
+			
+/*WITH TSN_winners AS (SELECT *
+					FROM awardsmanagers
+					WHERE awardid ILIKE 'TSN Manager of the Year'),
+					
+		nl_winners AS (SELECT *
+					FROM TSN_winners
+					WHERE lgid ILIKE 'NL'),
+					
+		al_winners AS (SELECT *
+					FROM TSN_winners
+					WHERE lgid ILIKE 'AL'),
+					
+		alnl_winners AS (SELECT nl_winners.playerid, al_winners.lgid AS al_win, al_winners.yearid AS al_year, nl_winners.lgid AS nl_win, nl_winners.yearid AS nl_year
+					FROM al_winners INNER JOIN nl_winners ON al_winners.playerid = nl_winners.playerid)
+					
+SELECT alnl_winners.playerid, CONCAT(namefirst, ' ', namelast), teamid, al_win, al_year, nl_win, nl_year
+FROM alnl_winners
+FULL JOIN people ON alnl_winners.playerid = people.playerid
+FULL JOIN managershalf ON alnl_winners.playerid = managershalf.playerid
+WHERE people.playerid = alnl_winners.playerid*/
+					
+					
+					
+					
+					
+					
+					
+/*SELECT DISTINCT(al_nl_winners.playerid), CONCAT(namefirst, ' ', namelast), teams.teamid
+FROM al_nl_winners
+INNER JOIN people ON al_nl_winners.playerid = people.playerid
+LEFT JOIN managershalf ON al_nl_winners.playerid = managershalf.playerid
+LEFT JOIN teams ON managershalf.teamid = teams.teamid*/
