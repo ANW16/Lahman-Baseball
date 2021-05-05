@@ -49,12 +49,15 @@ GROUP BY yearid, field_pos
 ORDER BY total_putouts DESC*/
 
 
-			---AVG Strike Outs and Home Runs per Decade---
+			---AVG Strike Outs and Home Runs per Game by Decade---
 
-/*SELECT yearid, teamid, g, so
-FROM batting
-WHERE yearid = 1920
-*/
+SELECT ROUND((SUM(so)/(SUM(g)/2)::decimal), 2) AS avg_so
+FROM teams
+WHERE yearid >= 2010 AND yearid <= 2016
+
+
+
+
 
 
 			---Base Stealing Success 2016---
@@ -67,7 +70,7 @@ ORDER BY success_rate DESC*/
 
 			---1970-2016 WS Data---
 
-WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
+/*WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
 						FROM teams
 						WHERE yearid >= 1970 
 						GROUP BY teamid
@@ -81,13 +84,18 @@ WITH all_time_wins AS (SELECT DISTINCT(teamid), SUM(w) total_wins
 			ws_winners AS (SELECT yearid, teamid, wswin AS ws_win, w
 						FROM teams
 						WHERE yearid >= 1970 AND wswin ILIKE 'Y'
-						ORDER BY yearid ASC)
+						ORDER BY yearid ASC),
 						
-SELECT teams.yearid, MAX(w) AS most_w
+WITH ws_most_wl AS (SELECT teams.yearid, MAX(w) AS most_w
 FROM teams
-WHERE teams.yearid >= 1970 
+WHERE teams.yearid >= 1970
 GROUP BY teams.yearid
-ORDER BY teams.yearid ASC
+ORDER BY teams.yearid ASC)
+
+SELECT DISTINCT(teams.yearid), w,wswin
+FROM ws_most_wl INNER JOIN teams USING (yearid)
+WHERE w = most_w AND wswin = 'Y'*/
+
 						
 
 			--Total Wins for Losers/Winners of WS--
