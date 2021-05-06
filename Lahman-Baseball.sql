@@ -51,14 +51,32 @@ ORDER BY total_putouts DESC*/
 
 			---AVG Strike Outs and Home Runs per Game by Decade---
 
-SELECT ROUND((SUM(so)/(SUM(g)/2)::decimal), 2) AS avg_so
+SELECT ROUND((SUM(so)/(SUM(g)/2)::decimal), 2) AS so_avg, 
+	   ROUND((SUM(hr)/(SUM(g)/2)::decimal), 2) AS hr_avg,
+CASE 
+	WHEN yearid BETWEEN 1920 AND 1929 THEN '1920s'
+	WHEN yearid BETWEEN 1930 AND 1939 THEN '1930s'
+	WHEN yearid BETWEEN 1940 AND 1949 THEN '1940s'
+	WHEN yearid BETWEEN 1950 AND 1959 THEN '1950s'
+	WHEN yearid BETWEEN 1960 AND 1969 THEN '1960s'
+	WHEN yearid BETWEEN 1970 AND 1979 THEN '1970s'
+	WHEN yearid BETWEEN 1980 AND 1989 THEN '1980s'
+	WHEN yearid BETWEEN 1990 AND 1999 THEN '1990s'
+	WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
+END AS decade
 FROM teams
-WHERE yearid >= 2010 AND yearid <= 2016
-
-
-
-
-
+WHERE
+	yearid BETWEEN 1920 AND 1929 OR 
+	yearid BETWEEN 1930 AND 1939 OR
+	yearid BETWEEN 1940 AND 1949 OR
+	yearid BETWEEN 1950 AND 1959 OR 
+	yearid BETWEEN 1960 AND 1969 OR 
+	yearid BETWEEN 1970 AND 1979 OR 
+	yearid BETWEEN 1980 AND 1989 OR
+	yearid BETWEEN 1990 AND 1999 OR
+	yearid BETWEEN 2000 AND 2009
+GROUP BY decade
+ORDER BY decade ASC
 
 			---Base Stealing Success 2016---
 
@@ -92,7 +110,7 @@ WHERE teams.yearid >= 1970
 GROUP BY teams.yearid
 ORDER BY teams.yearid ASC)
 
-SELECT DISTINCT(teams.yearid), w,wswin
+SELECT ROUND((COUNT(DISTINCT(teams.yearid))::decimal)/46, 2)
 FROM ws_most_wl INNER JOIN teams USING (yearid)
 WHERE w = most_w AND wswin = 'Y'*/
 
